@@ -109,5 +109,7 @@ while want_pizza == "yes":
 
 pizza_parlour_frame = pandas.DataFrame(pizza_parlour_dict)
 
+pizza_parlour_frame['[Total]'] = pizza_parlour_frame['[Pizza Price]'] + \
+                                 pizza_parlour_frame['[Toppings Price]']
 
 print(pizza_parlour_frame)

@@ -6,22 +6,21 @@ import random
 
 # show instructions
 def show_instructions():
-    print('''\n***** Instructions *****
+    print('''\n********** Instructions **********
 
-For each ticket, enter...
-- The person's name (can't be blank)
-- Age (between 12 and 120)
-- Payment method (cash / credit)
+To order a pizza, type in the pizza you would like from the menu.
+Only the first word is necessary when entering the pizza 
+eg: Cheese Pizza would simply require "cheese".
 
-When you have entered all the users, press 'xxx' to quit.
+To order a topping, you would similarly enter the topping from the menu you desire.
+eg: If you wanted Ham as an extra topping, you would enter "ham"
 
-The program will then display the ticket details
-including the cost of each ticket, the total cost
-and the total profit.
+After you choose the desired pizzas with any extra toppings,
+your order will be organised into a summary presented at the end of your order.
 
-This information will automatically written to a text file.
+This information will also be automatically written to a text file, as a receipt.
 
-***************************
+**************************************
 
 Here is the menu:''')
 
@@ -63,15 +62,15 @@ def num_check(question):
 def calc_pizza_price(var_pizza):
 
     # Hawaiian Pizza is $7.00
-    if var_pizza == "Hawaiian":
+    if var_pizza == "hawaiian":
         price = 7
 
     # Plain Cheese Pizza is $6.50
-    elif var_pizza == "Plain Cheese":
+    elif var_pizza == "cheese":
         price = 6.5
 
     # Meatlovers Pizza is $8.00
-    elif var_pizza == "Meatlovers":
+    elif var_pizza == "meatlovers":
         price = 8
 
     # Pepperoni Pizza is $7.50
@@ -82,7 +81,7 @@ def calc_pizza_price(var_pizza):
 
 
 # calc toppings price function
-def calc_toppings_price(var_toppings):
+def calc_topping_price(var_toppings):
 
     # Ham is $1.50
     if var_toppings == "ham":
@@ -127,16 +126,15 @@ def currency(x):
 
 # lists for string checker referencing
 yes_no_list = ["yes", "no"]
-pizza_list = ["hawaiian", "plain cheese", "meatlovers", "pepperoni"]
+pizza_list = ["hawaiian", "cheese", "meatlovers", "pepperoni"]
 toppings_list = ["ham", "mushroom", "olives", "tomatoes"]
 
 # dictionaries to hold pizza details
 all_pizzas = []
 all_pizza_costs = []
-ind_topping = []
 all_toppings = []
-ind_topping_cost = []
 all_toppings_cost = []
+temp_toppings = []
 
 pizza_parlour_dict = {
     "[Pizza]": all_pizzas,
@@ -147,7 +145,8 @@ pizza_parlour_dict = {
 
 
 more_pizza = "yes"
-toppings = 0
+want_toppings = "no"
+toppings_price = 0
 
 want_instructions = string_checker("Would you like to read the "
                                    "instructions? (y/n): ", 1,
@@ -165,75 +164,38 @@ while more_pizza == "yes":
     print()
 
     # initial pizza selection
-    pizza = string_checker("Please select which pizza you would like: ", 0, pizza_list).capitalize()
+    which_pizza = string_checker("Please select which pizza you would like: ", 0, pizza_list).capitalize()
 
-    if pizza == "Hawaiian":
-        price = calc_pizza_price(pizza)
-        print("You chose Hawaiian, that will be ${:.2f}".format(price))
-    elif pizza == "Plain cheese":
-        price = calc_pizza_price(pizza)
-        print("You chose Plain Cheese, that will be ${:.2f}".format(price))
-    elif pizza == "Meatlovers":
-        price = calc_pizza_price(pizza)
-        print("You chose Meatlovers, that will be ${:.2f}".format(price))
-    elif pizza == "Pepperoni":
-        price = calc_pizza_price(pizza)
-        print("You chose Pepperoni, that will be ${:.2f}".format(price))
-    # ensures program that price cannot be undefined, even though string checker will do
-    # this any way
-    else:
-        price = 0
-
-    pizza_cost = price
-    topping_price = 0
-    all_pizza_costs.append(pizza_cost)
-    all_pizzas.append(pizza)
+    print("You chose {} for ${}".format(which_pizza, calc_pizza_price(which_pizza)))
+    all_pizzas.append(which_pizza)
+    all_pizza_costs.append(calc_pizza_price(which_pizza))
 
     want_toppings = string_checker("Would you like any extra toppings?", 1, yes_no_list)
-    toppings = 0
+    toppings_price = 0
+    temp_toppings = []
 
-    while want_toppings == "yes" and toppings < 2:
+    if want_toppings == "yes":
+        while want_toppings == "yes":
+            show_toppings()
+            which_topping = string_checker("What toppings would you like?", 1, toppings_list)
+            print("You chose {} for ${}".format(which_topping, calc_topping_price(which_topping)))
+            toppings_price = toppings_price + calc_topping_price(which_topping)
+            temp_toppings.append(which_topping)
+            want_toppings = string_checker("Would you like any more extra toppings?", 1, yes_no_list)
+            if want_toppings == "yes":
+                continue
+            elif want_toppings == "no":
+                break
+    else:
+        temp_toppings.append("None")
 
-        show_toppings()
-        topping = string_checker("What extra toppings would you like? (2 maximum)", 1, toppings_list).capitalize()
-        if topping == "Ham":
-            topping_price = topping_price + calc_toppings_price(topping)
-            print("You have chosen Ham, that will be an extra ${:.2f}".format(topping_price))
-        elif topping == "Mushroom":
-            topping_price = topping_price + calc_toppings_price(topping)
-            print("You have chosen Mushroom, that will be an extra ${:.2f}".format(topping_price))
-        elif topping == "Olives":
-            topping_price = topping_price + calc_toppings_price(topping)
-            print("You have chosen Olives, that will be an extra ${:.2f}".format(topping_price))
-        elif topping == "Tomatoes":
-            topping_price = topping_price + calc_toppings_price(topping)
-            print("You have chosen Tomatoes, that will be an extra ${:.2f}".format(topping_price))
-        else:
-            topping_price = 0
-            topping = "none"
+    all_toppings.append(temp_toppings)
+    all_toppings_cost.append(toppings_price)
 
-        toppings += 1
-        ind_topping.append(topping)
+    more_pizza = string_checker("Do you want any more pizzas?", 1, yes_no_list)
 
-        more_toppings = string_checker("Would you like any other toppings?", 1, yes_no_list)
-
-        if more_toppings == "yes" and toppings > 1:
-            print("You have already selected the maximum amount of toppings.")
-            # add pizza and costs to lists
-            pass
-        elif more_toppings == "yes":
-            pass
-        elif more_toppings == "no":
-            # add pizza and cost to lists
-            break
-
-    all_toppings.append(ind_topping)
-    all_toppings_cost.append(topping_price)
-
-    more_pizza = string_checker("Would you like to order another pizza?", 1, yes_no_list)
     if more_pizza == "yes":
-        want_instructions = "no"
-        pass
+        continue
     elif more_pizza == "no":
         break
 
