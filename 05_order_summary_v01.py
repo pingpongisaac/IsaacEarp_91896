@@ -108,6 +108,14 @@ while want_pizza == "yes":
         break
 
 pizza_parlour_frame = pandas.DataFrame(pizza_parlour_dict)
+# pizza_parlour_frame = mini_movie_frame.set_index('Name')
+
+# calculate total ticket cost (ticket + surcharge)
+pizza_parlour_frame['[Total]'] = pizza_parlour_frame['[Pizza Price]'] + pizza_parlour_frame['[Topping Price]']
+
+order_total = pizza_parlour_frame['[Total]'].sum()
 
 
 print(pizza_parlour_frame)
+print()
+print("Your order total is ${}".format(order_total))

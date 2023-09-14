@@ -162,6 +162,7 @@ def random_number():
 yes_no_list = ["yes", "no"]
 pizza_list = ["hawaiian", "cheese", "meatlovers", "pepperoni"]
 toppings_list = ["ham", "mushroom", "olives", "tomatoes"]
+delivery_pickup_list = ["delivery", "pickup"]
 
 # dictionaries to hold pizza details
 all_pizzas = []
@@ -174,7 +175,7 @@ pizza_parlour_dict = {
     "[Pizza]": all_pizzas,
     "[Pizza Price]": all_pizza_costs,
     "[Extra Toppings]": all_toppings,
-    "[Toppings Price]": all_toppings_cost
+    "[Topping Price]": all_toppings_cost
 }
 
 
@@ -188,133 +189,132 @@ name = text_check("Please enter your name for your order: ")
 print()
 phone = num_check("Hello {}, can we please have your phone number for if we need to contact you: ".format(name))
 print()
-address = input("And finally, can we please have your address for the delivery: ")
-print()
 want_instructions = string_checker("Thank you! Would you like to read the "
                                    "instructions for how to use our system? "
                                    "(yes/no): ", 1,
                                    yes_no_list)
+while True:
+    while more_pizza == "yes":
+        if want_instructions == "yes":
+            show_instructions()
+            show_menu()
+        else:
+            print()
+            print("Okay, here is the menu:")
+            show_menu()
 
-while more_pizza == "yes":
-    if want_instructions == "yes":
-        show_instructions()
-        show_menu()
-    else:
-        print("Okay, here is the menu:")
-        show_menu()
+        print()
 
+        # initial pizza selection
+        which_pizza = string_checker("Please select which pizza you would like: ", 0, pizza_list)
+        print()
+        print("You chose {} for ${:.2f}".format(which_pizza, calc_pizza_price(which_pizza)))
+        all_pizzas.append(which_pizza)
+        all_pizza_costs.append(calc_pizza_price(which_pizza))
+        print()
+        want_toppings = string_checker("Would you like any extra toppings?", 1, yes_no_list)
+        toppings_price = 0
+        temp_toppings = []
+
+    # runs through toppings order loop to determine toppings
+        if want_toppings == "yes":
+            while want_toppings == "yes":
+                show_toppings()
+
+                print()
+                which_topping = string_checker("What toppings would you like?", 1, toppings_list)
+                print()
+                print("You chose {} for ${:.2f}".format(which_topping, calc_topping_price(which_topping)))
+
+                toppings_price = toppings_price + calc_topping_price(which_topping)
+                temp_toppings.append(which_topping)
+
+                print()
+                want_toppings = string_checker("Would you like any more extra toppings?", 1, yes_no_list)
+
+                if want_toppings == "yes":
+                    continue
+                elif want_toppings == "no":
+                    break
+        else:
+            temp_toppings.append("None")
+
+        all_toppings.append(temp_toppings)
+        all_toppings_cost.append(toppings_price)
+
+        more_pizza = string_checker("Do you want any more pizzas?", 1, yes_no_list)
+
+        if more_pizza == "yes":
+            want_instructions = "no"
+            continue
+        elif more_pizza == "no":
+            break
+
+    pizza_parlour_frame = pandas.DataFrame(pizza_parlour_dict)
+    # pizza_parlour_frame = mini_movie_frame.set_index('Name')
+
+    # calculate total ticket cost (ticket + surcharge)
+    pizza_parlour_frame['[Total]'] = pizza_parlour_frame['[Pizza Price]'] + pizza_parlour_frame['[Topping Price]']
+
+    order_total = pizza_parlour_frame['[Total]'].sum()
+    winner = random_number()
+
+    # Currency Formatting (uses currency function)
+    add_dollars = ['[Pizza Price]', '[Topping Price]', '[Total]']
+    for var_item in add_dollars:
+        pizza_parlour_frame[var_item] = pizza_parlour_frame[var_item].apply(currency)
+
+    print(pizza_parlour_frame)
     print()
+    print("Your current order total comes to ${:.2f}".format(order_total))
 
-    # initial pizza selection
-    which_pizza = string_checker("Please select which pizza you would like: ", 0, pizza_list)
+    confirmation = string_checker("Would you like to confirm this order?", 1, yes_no_list)
 
-    print("You chose {} for ${}".format(which_pizza, calc_pizza_price(which_pizza)))
-    all_pizzas.append(which_pizza)
-    all_pizza_costs.append(calc_pizza_price(which_pizza))
-
-    want_toppings = string_checker("Would you like any extra toppings?", 1, yes_no_list)
-    toppings_price = 0
-    temp_toppings = []
-
-# runs through toppings order loop to determine toppings
-    if want_toppings == "yes":
-        while want_toppings == "yes":
-
-            show_toppings()
-
-            which_topping = string_checker("What toppings would you like?", 1, toppings_list)
-            print("You chose {} for ${:.2f}".format(which_topping, calc_topping_price(which_topping)))
-
-            toppings_price = toppings_price + calc_topping_price(which_topping)
-            temp_toppings.append(which_topping)
-
-            want_toppings = string_checker("Would you like any more extra toppings?", 1, yes_no_list)
-
-            if want_toppings == "yes":
-                continue
-            elif want_toppings == "no":
-                break
+    if confirmation == "yes":
+        print("*program continues*")
     else:
-        temp_toppings.append("None")
+        all_pizzas.clear()
+        all_pizza_costs.clear()
+        all_toppings.clear()
+        all_toppings_cost.clear()
+        pizza_parlour_frame = pandas.DataFrame(pizza_parlour_dict)
+        print(pizza_parlour_frame)
 
-    all_toppings.append(temp_toppings)
-    all_toppings_cost.append(toppings_price)
+        print("Okay, you're order has been cancelled")
 
-    more_pizza = string_checker("Do you want any more pizzas?", 1, yes_no_list)
+        new_order = string_checker("Would you like to begin another order?", 1, yes_no_list)
 
-    if more_pizza == "yes":
-        want_instructions = "no"
+        if new_order == "yes":
+            pass
+        else:
+            print("No worries, come back another day!")
+            exit()
+
+        more_pizza = "yes"
         continue
-    elif more_pizza == "no":
-        break
 
-
-pizza_parlour_frame = pandas.DataFrame(pizza_parlour_dict)
-# pizza_parlour_frame = mini_movie_frame.set_index('Name')
-
-# calculate total ticket cost (ticket + surcharge)
-pizza_parlour_frame['[Total]'] = pizza_parlour_frame['[Pizza Price]'] \
-                            + pizza_parlour_frame['[Toppings Price]']
-
-order_total = pizza_parlour_frame['[Total]'].sum()
-winner = random_number()
-
-# Currency Formatting (uses currency function)
-add_dollars = ['[Pizza Price]', '[Topping Price]', '[Total]']
-for var_item in add_dollars:
-    pizza_parlour_frame[var_item] = pizza_parlour_frame[var_item].apply(currency)
-
-print(pizza_parlour_frame)
 print()
-print("Your order total comes to ${:.2f}".format(order_total))
+print("Your order has been confirmed.")
 print()
+collection_method = string_checker("Would you like to have this order delivered (additional $5 fee) or for you to pick "
+                                   "it up? (enter 'delivery' or 'pickup'): ", 0, delivery_pickup_list)
+
+if collection_method == "delivery":
+    print("You have chosen delivery, your new order total ${:.2f}".format(order_total + 5))
+    print()
+    while True:
+        address = input("Please enter your address for delivery: ")
+        print()
+        correct_address = string_checker("You have entered your address as '{}' is this correct?".format(address), 1, yes_no_list)
+
+        if correct_address == "yes":
+            break
+        else:
+            continue
+else:
+    print()
+    print("You have chosen pick up")
+
 if winner == 5:
     print("Congratulations, you are one our lucky %10 "
           "of customers. You have won a $20 Countdown gift card")
-
-# **** Get current date for heading and filename ****
-# get today's date
-today = date.today()
-
-# Get day, month and year as individual strings
-day = today.strftime("%d")
-month = today.strftime("%m")
-year = today.strftime("%Y")
-
-heading = "--------------- Isaac's Pizza Parlour Receipt ({}/{}/{}) --------------\n".format(day, month, year)
-filename = "{}_pizza_order_{}_{}_{}".format(name, year, month, day)
-
-# address the user
-address_customer = "Order for {}\n" \
-                   "Ph: {}\n" \
-                   "{}/{}/{}\n".format(name, phone, year, month, day)
-
-items_ordered_heading = "----------------------------- Items Ordered -----------------------------\n"
-# Change frame to a string so that we can export it to file
-pizza_parlour_string = pandas.DataFrame.to_string(pizza_parlour_frame)
-
-# create strings for printing....
-total_order_heading = "\n------------------------------ Order Total ------------------------------\n"
-total_order_price = "Your total order price is: ${:.2f}\n".format(order_total)
-
-# closing statement
-thank_you = "Thank you for ordering from Isaac's Pizza Parlour, enjoy your meal!"
-
-# list holding content to print \ write to file
-to_write = [heading, address_customer, items_ordered_heading,
-            pizza_parlour_string, total_order_heading, total_order_price,
-            thank_you]
-
-
-# write output to file
-# create file to hold data (add .txt extension)
-write_to = "{}.txt".format(filename)
-text_file = open(write_to, "w+")
-
-for item in to_write:
-    text_file.write(item)
-    text_file.write("\n")
-
-# close file
-text_file.close()
-# program ends
