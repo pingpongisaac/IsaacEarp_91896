@@ -62,11 +62,8 @@ Here is the menu:''')
 def show_menu():
     print('''\n********** Menu **********
  * Hawaiian Pizza: $7.00
--------------------------- 
  * Cheese Pizza: $6.50
--------------------------- 
  * Meatlovers: $8.00
---------------------------     
  * Pepperoni: $7.50
 **************************''')
 
@@ -75,13 +72,9 @@ def show_menu():
 def show_toppings():
     print('''\n******* Toppings *******
  * Ham: $2.50
-------------------------
  * Mushroom: $3.50
-------------------------
  * Onion: $1.50
- ----------------------- 
  * Olives: $2.00
-------------------------
  * Tomatoes: $2.50
 ************************''')
 
@@ -182,17 +175,8 @@ more_pizza = "yes"
 want_toppings = "no"
 toppings_price = 0
 
-print("Welcome to Isaac's Pizza Parlour!")
-print()
-name = text_check("Please enter your name for your order: ")
-print()
-phone = num_check("Hello {}, can we please have your phone number for if we need to contact you: ".format(name))
-print()
-address = input("And finally, can we please have your address for the delivery: ")
-print()
-want_instructions = string_checker("Thank you! Would you like to read the "
-                                   "instructions for how to use our system? "
-                                   "(yes/no): ", 1,
+want_instructions = string_checker("Would you like to read the "
+                                   "instructions?", 1,
                                    yes_no_list)
 
 while more_pizza == "yes":
@@ -260,7 +244,7 @@ order_total = pizza_parlour_frame['[Total]'].sum()
 winner = random_number()
 
 # Currency Formatting (uses currency function)
-add_dollars = ['[Pizza Price]', '[Topping Price]', '[Total]']
+add_dollars = ['[Pizza Price]', '[Toppings Price]', '[Total]']
 for var_item in add_dollars:
     pizza_parlour_frame[var_item] = pizza_parlour_frame[var_item].apply(currency)
 
@@ -282,12 +266,7 @@ month = today.strftime("%m")
 year = today.strftime("%Y")
 
 heading = "--------------- Isaac's Pizza Parlour Receipt ({}/{}/{}) --------------\n".format(day, month, year)
-filename = "{}_pizza_order_{}_{}_{}".format(name, year, month, day)
-
-# address the user
-address_customer = "Order for {}\n" \
-                   "Ph: {}\n" \
-                   "{}/{}/{}\n".format(name, phone, year, month, day)
+filename = "pizza_order_{}_{}_{}".format(year, month, day)
 
 items_ordered_heading = "----------------------------- Items Ordered -----------------------------\n"
 # Change frame to a string so that we can export it to file
@@ -297,13 +276,9 @@ pizza_parlour_string = pandas.DataFrame.to_string(pizza_parlour_frame)
 total_order_heading = "\n------------------------------ Order Total ------------------------------\n"
 total_order_price = "Your total order price is: ${:.2f}\n".format(order_total)
 
-# closing statement
-thank_you = "Thank you for ordering from Isaac's Pizza Parlour, enjoy your meal!"
-
 # list holding content to print \ write to file
-to_write = [heading, address_customer, items_ordered_heading,
-            pizza_parlour_string, total_order_heading, total_order_price,
-            thank_you]
+to_write = [heading, items_ordered_heading,
+            pizza_parlour_string, total_order_heading, total_order_price]
 
 
 # write output to file
