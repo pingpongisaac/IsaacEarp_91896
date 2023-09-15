@@ -15,7 +15,12 @@ def yes_no(question):
 
 
 def show_menu():
-    print("*shows menu*")
+    print('''\n********** Menu **********
+ 1: Hawaiian Pizza: $7.00
+ 2: Cheese Pizza: $6.50
+ 3: Meatlovers: $8.00
+ 4: Pepperoni: $7.50
+**************************''')
 
 
 # main routine
@@ -26,13 +31,13 @@ while want_pizza == "yes":
     show_menu()
     which_pizza = input("Which pizza would you like?")
 
-    if which_pizza == "hawaiian":
+    if which_pizza == "1":
         print("you chose hawaiian")
-    elif which_pizza == "cheese":
+    elif which_pizza == "2":
         print("you chose plain cheese")
-    elif which_pizza == "meatlovers":
+    elif which_pizza == "3":
         print("You chose meatlovers")
-    elif which_pizza == "pepperoni":
+    elif which_pizza == "4":
         print("You chose pepperoni")
     else:
         print("Please enter a pizza from the menu")
